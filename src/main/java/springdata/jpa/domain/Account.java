@@ -2,10 +2,10 @@ package springdata.jpa.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CollectionId;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,8 +32,15 @@ public class Account {
     @Id @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, unique = true,length = 200)
     private String username;
 
     private String password;
+
+    @Temporal(TemporalType.DATE)
+    private Date createdAt;
+
+    @Transient
+    private String no;
 
 }

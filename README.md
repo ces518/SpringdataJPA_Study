@@ -79,3 +79,41 @@
 > 해당 메시지가 나는이유 ? 
 - 사용하는 드라이버가 createClob을 구현하지않았기때문에 발생함.
 - spring.jpa.properties.hibernate.jdbc.lob.non_context_creation=true
+
+
+### 엔티티 매핑
+> @Entity
+- 엔티티는 객체지향프로그래밍에서의 이름이다.
+- 보통 클래스와 동일한 이름을 사용하기때문에 변경하지않는다.
+- 엔티티의 이름은 JQL에서 사용한다.
+
+> @Table
+- 릴레이션 (데이터베이스) 에서의 이름이다. [실제 테이블의 이름]
+- @Entity의 이름이 기본값이다.
+- 테이블의 이름은 SQL에서 사용된다.
+
+> @Id
+- 엔티티의 주 키를 매핑할때 사용한다.
+- 자바의 모든 primitive타입과 , 래퍼타입을 사용할 수 있다.
+- Date, BigDecimal, BigInteger도 사용이 가능하다.
+- 복합키를 만드는 매핑방법도 존재한다.
+
+> @GeneratedValue
+- 주키의 생성 방법을 매핑하는 애노테이션이다.
+- 생성전략과 , 생성기를 설정할 수 있다.
+    - 기본전략은 AUTO : 사용하는 디비에 따라 적절한 전략을 선택한다.
+    - TABLE, SEQUENCE, IDENTITY중 하나 ..
+
+> @Column
+- 테이블의 컬럼을 매핑할때 사용한다.
+- 엔티티 클래스의 필드에 사용한다.
+- unique. nullable, length,columnDefiniton... 등 다양한 옵션을 제공한다.
+
+> @Temporal
+- 현재 JPA2.1까지는 Date, Calender한다. 2.2 이상부터 LocalDate지원..
+- Custom한 타입을 매핑하는 방법도 존재한다. (Converter)
+
+> @Transient
+- 컬럼과 매핑하고싶지않은 필드에 사용한다.
+
+

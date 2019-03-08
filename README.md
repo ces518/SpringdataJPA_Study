@@ -116,4 +116,24 @@
 > @Transient
 - 컬럼과 매핑하고싶지않은 필드에 사용한다.
 
+### VALUE 타입 매핑 
+
+>엔티티타입과 벨류타입 
+- 식별자가 존재하는가
+- 독립적으로 존재해야하는가
+
+>밸류타입 종류
+- primitive type
+- Composite type
+- Collection Value type
+    - 기본타입의 콜렉션
+    - 컴포짓 타입의 콜렉션
+
+> 컴포짓 벨류타입 매핑
+- @Embadable
+- @Embadded
+- @AttributeOverrides
+- @AttributeOverride
+
+
 

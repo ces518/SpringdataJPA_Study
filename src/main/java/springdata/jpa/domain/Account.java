@@ -43,4 +43,15 @@ public class Account {
     @Transient
     private String no;
 
+    // Composite value를 정의한뒤
+    // @Embedded 애노테이션 사용하면 해당 value를 컬럼으로 지정이 가능하다.
+    // 해당 컴포짓 밸류를 여러개 사용하고싶다면,
+    // AttributeOverrides 와, AttributeOverride를 사용하여 컬럼명을 지정해줄수 있다.
+    // name과 column은 필수값이다.
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name ="address", column = @Column(name = "my_address"))
+    })
+    private Address address;
+
 }

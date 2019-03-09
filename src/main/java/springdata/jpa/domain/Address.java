@@ -1,6 +1,7 @@
 package springdata.jpa.domain;
 
 import javax.persistence.Embeddable;
+import javax.persistence.OrderColumn;
 
 /**
  * Created by IntelliJ IDEA.

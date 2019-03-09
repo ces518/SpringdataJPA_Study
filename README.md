@@ -135,5 +135,61 @@
 - @AttributeOverrides
 - @AttributeOverride
 
+### 1:N 매핑
+- 관계에는 항상 두 엔티티가 존재한다.
+    - 둘중 하나는 그 관계의 주인 (owner) 이고
+    - 다른쪽은 종속된 쪽 (non-owner) 이다.
+    - 해당관계의 반대쪽 레퍼런스를 참조하고 있는 엔티티가 관계의 주인이다.
+    
+- 단방향 관계 매핑
+    - 단방향 관계에서의 주인은 명확하다.
+    - 관계를 정의한쪽이 그 주인이다.
+    
+- 단방향 @ManyToOne
+    - 기본값은 FK 컬럼 생성
+    - 기본 Fetch 전략은 EAGER
 
+- 단방향 @OneToMany
+    - 기본값은 조인테이블 생성
+    - 기본 Fetch 전략은 LAZY
+    
+- 양방향 
+    - FK를 가지고있는쪽이 관계의 주인이다.
+    - 따라서 기본값은 @ManyToOne의 관계를 정의한쪽이 관계의 주인이된다.
+    - 관계의 주인이 아닌쪽에서는 @OneToMany 쪽에서 mappedBy를 사용하여 관계를 맺고있는 필드를 설정해야한다.
+    - 주인에게 관계를 설정해야 DB에 반영이된다.
+    
+### Cascade
+- 엔티티의 상태를 전파시키는 옵션
 
+> 엔티티의 상태란 ?
+- Transient : JPA가 모르는상태
+- Persistent : JPA가 관리중인 상태 (1차캐시,Dirty Checking , Write Behind..)
+- Detached : JPA가 더이상 관리하지않는 상태
+- Removed : JPA가 관리하긴하지만 삭제하기로한 상태
+
+> 1차 캐시란?
+-  save를 호출했다고 해서 INSERT QUERY가 바로 발생하는것이 아니라.
+          Persistent Context객체에 영속화 되었다가
+          Transaction이 종료되는 시점에 Insert Query가 발생한다.
+          즉, save를 한뒤 다시 로드하더라도, select쿼리는 발생하지않는다.
+    
+> Persistent 상태
+- JPA가 관리하는 Persistent상태가 되면 , JPA가 게속해서 객체의 변경을 감지하는 상태이다.
+- 즉, 해당 객체에 변경사항이 일어나면, 이를 감지하고 자동적으로 반영해준다 (Update) 
+
+> Dirty Checking
+- 객체의 상태를 지속적으로 감지
+
+> Write Behind
+- 객체를 최대한 늦게, 필요한 시점에 DateBase에 적용
+
+> Detached 상태
+- Service 나 Repository의 트랜잭션이 종료된 후, Controller로 해당 객체를 전달해주었을때
+- 해당 트랜잭션 (Hibernate Session) 이 종료되었기때문에 JPA의1차캐시,DirtyChecking, Wrtie Behind, LAZY Loading등이 일어나지않는다.
+- Persistent상태로 돌아가려면 reAttach를 해야함.
+
+> cascade 
+- 부모의 상태를 자식에게도 전파한다.
+- 일반적으로 CascadeType.ALL 을 사용함.
+- 부모가 등록되면 자식도 자동적으로 등록되며, 삭제시에도 동일하다.

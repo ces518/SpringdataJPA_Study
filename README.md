@@ -211,6 +211,45 @@
 - 1:N의 관계일떄, 1에 해당하는 데이터를 읽어올때, N에 해당하는 데이터들을 같이 읽어온다.
  
 
+### JPA Query ?
+> JPQL (HQL)
+- Java Persistence Query Language / Hibernate Query Language
+- 데이터 베이스기반 쿼리가아닌, 엔티티기반 쿼리.
+- JPA 또는 하이버네이트가 해당쿼리를 SQL 로 변환하여 실행한다.
+- JPA 2.0 까지는 Type쿼리를 사용할수없다.
+```
+       TypedQuery<Post> query = entityManager.createQuery("select p from Post p", Post.class);
+        List<Post> posts = query.getResultList();
+        posts.forEach(System.out::println);
 
+```
+> 단점
+- 문자열기반이기 때문에 오타 등 타입세이프하지않다.
+
+> TypeSafe한 쿼리
+- Criteria
+```
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Post> query2 = criteriaBuilder.createQuery(Post.class);
+        Root<Post> from = query2.from(Post.class);
+        query2.select(from);
+
+        List<Post> resultList = entityManager.createQuery(query2).getResultList();
+        resultList.forEach(System.out::println);
+```
+- typeSafe하다는 장점이 있지만, 역시 잘사용하지 않는다.
+
+> NamedQuery
+- Mybatis 처럼 쿼리를 미리 등록해두고 사용하는 방법도 존재한다.
+- 엔티티 상단에 미리 쿼리를 등록해 두어야한다.
+```
+  TypedQuery<Post> getAllPosts = entityManager.createNamedQuery("getAllPosts", Post.class);
+```
+
+> NatvieQuery
+- 직접 Native한 SQL 을 작성하여 사용할 수있다.
+- 한 가지 재미있는점은 returnType을 지정할 수 있음에도 불구하고
+- 해당 메서드의 리턴타입은 Query형태로만 반환한다.
+- 하지만 받아올때 Generic을 사용하여 받아올수는 있다.
 
 

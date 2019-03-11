@@ -12,7 +12,13 @@ import springdata.jpa.domain.Study;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -116,5 +122,38 @@ public class JpaRunner implements ApplicationRunner {
         post.addComment(comment1);
 
         session.save(post);
+
+
+        /*
+        * JPQL  (JPA 2.0까지는 TypeQuery가 불가능했다.)
+        * 단점 : Type Safe 하지않다.
+        * */
+        TypedQuery<Post> query = entityManager.createQuery("select p from Post p", Post.class);
+        List<Post> posts = query.getResultList();
+        posts.forEach(System.out::println);
+
+        /*
+        * TypeSafe한 쿼리를 만드는방법
+        * Creteria.
+        * */
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Post> query2 = criteriaBuilder.createQuery(Post.class);
+        Root<Post> from = query2.from(Post.class);
+        query2.select(from);
+
+        List<Post> resultList = entityManager.createQuery(query2).getResultList();
+        resultList.forEach(System.out::println);
+
+        /*
+        * Mybatis 처럼 쿼리를 미리등록해두고, 사용하는 방법도 존재한다.
+        * Entity상단에 미리 쿼리를 등록해두어야한다.
+        * */
+        TypedQuery<Post> getAllPosts = entityManager.createNamedQuery("getAllPosts", Post.class);
+
+        /*
+        * 직접 Native한 Query를 작성하여 사용할 수 있다.
+        * */
+        List<Post> postList = entityManager.createNativeQuery("select * from post", Post.class).getResultList();
+        postList.forEach(System.out::println);
     }
 }

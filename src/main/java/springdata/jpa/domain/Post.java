@@ -16,6 +16,9 @@ import java.util.Set;
 
 @Entity
 @Getter @Setter
+@NamedQueries({
+        @NamedQuery(name = "getAllPosts", query = "SELECT p FROM Post p")
+})
 public class Post {
 
     @Id @GeneratedValue

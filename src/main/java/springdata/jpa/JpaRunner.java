@@ -6,6 +6,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import springdata.jpa.domain.Account;
+import springdata.jpa.domain.Comment;
+import springdata.jpa.domain.Post;
 import springdata.jpa.domain.Study;
 
 import javax.persistence.EntityManager;
@@ -100,5 +102,19 @@ public class JpaRunner implements ApplicationRunner {
            update Query를 날리지않았는데도 update쿼리가 자동적으로 발생함.
          */
         june.setUsername("park-june0");
+
+
+        Post post = new Post();
+        post.setTitle("게시글");
+
+        Comment comment = new Comment();
+        comment.setComment("댓글 1");
+        post.addComment(comment);
+
+        Comment comment1 = new Comment();
+        comment1.setComment("댓글 2");
+        post.addComment(comment1);
+
+        session.save(post);
     }
 }

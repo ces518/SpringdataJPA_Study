@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -28,11 +29,20 @@ public class Post {
     * Post가 등록되면 comment도 등록,
     * post가 삭제되면 comment 삭제.
     * */
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private Set<Comment> comments;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Set<Comment> comments = new HashSet<>();
 
     public void addComment(Comment comment) {
         this.getComments().add(comment);
         comment.setPost(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "seq=" + seq +
+                ", title='" + title + '\'' +
+                ", comments=" + comments +
+                '}';
     }
 }

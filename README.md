@@ -252,4 +252,27 @@
 - 해당 메서드의 리턴타입은 Query형태로만 반환한다.
 - 하지만 받아올때 Generic을 사용하여 받아올수는 있다.
 
+### Spring-data-jpa 의 원리
+- Repository를 직접 매번 일일히 구현하기엔 매우 번거로운 작업이기에
+- 불과 7~8년 전만해도 GenericRepository<Board,Long> 의 형태로 자주쓰는 케이스를 프레임워크형태로 쓰는것이 유행이었다.
+```
+@Repository
+public class BoardRepository extends GenericRepository<Board,Long> {
+    ...
+}
+```
+
+- 최근의 가장 진보된 형태의 방법
+- JpaRepository<Entity,Id> 형태의 인터페이스를 상속받는 방법.
+- @Repository가 없어도 빈으로 등록을 해준다.
+
+- @EnableJpaRepositories 애노테이션을 @Configuration class에 선언해주어야하지만
+- Spring Boot의 경우에는 이를 자동적으로 해준다.
+
+> 내부적으로 어떤식으로 이루어지는지 ?
+- @Import(JpaRepositoriesRegistrar.class) 로 부터 시작
+- 핵심은 ImportBeanDefinitionRegistrar 인터페이스
+- ImportBeanDefinitionRegistrar 는 스프링 프레임웍이 제공해주는 인터페이스이다.
+> Bean을 프로그래밍을 통하여 빈을 생성할수 있도록 제공함.
+- 특정 interface를 상속받은 클래스를 빈으로 자동등록하도록 이 가능해진다.
 

@@ -317,5 +317,12 @@ public interface MyRepository<T,Id extends Serializable> extends Repository<T, I
 }
 ```
 
+### Null 처리하기
+- return 값이 하나 일 경우 java 8 의 Optional을 사용 하여 null 처리 가능하다.
+- Collection 들은 비어있는 collection 을 리턴하기때문에 null check 가 의미없다.
+- Spring Framework 5.0 부터 지원하는 null 애노테이션 을 지원한다.
+- @NonNullApi @NonNull @Nullable 
+- 런타임 체크 지원
+- JSR 305 애노테이션 을 메타 애노테이션을 지원함.
 
 

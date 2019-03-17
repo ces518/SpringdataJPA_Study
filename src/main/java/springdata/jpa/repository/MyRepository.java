@@ -2,9 +2,12 @@ package springdata.jpa.repository;
 
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,4 +29,6 @@ public interface MyRepository<T,Id extends Serializable> extends Repository<T, I
 
     List<T> findAll();
 
+    @Nullable
+    <E extends T> Optional<T> findById(@NonNull Id id);
 }

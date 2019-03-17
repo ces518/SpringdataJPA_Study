@@ -276,3 +276,46 @@ public class BoardRepository extends GenericRepository<Board,Long> {
 > Bean을 프로그래밍을 통하여 빈을 생성할수 있도록 제공함.
 - 특정 interface를 상속받은 클래스를 빈으로 자동등록하도록 이 가능해진다.
 
+### Spring-data-common
+- spring-data Project의 공통 프로젝트 
+- PagingAndSortingRepository (paging , sorting 제공 )
+- CrudReposistory (기본 crud)
+- Repository (마커 interface)
+- @NoRepositoryBean (실제 레포지토리가 아니므로 빈으로 등록하지않도록 하는 애노테이션)
+
+- save (저장)
+- saveAll (다수 저장)
+- findById (1개 검색)
+- existById (존재여부 판단)
+- 등등 ...
+
+
+### Repository 인터페이스 정의하기
+- 인터페이스로 공개할 메서드를 정의하고싶다면 ..
+- @RepositoryDefinition 애노테이션을 사용하여 정의할 수 있다.
+- 하지만 위의 방법은 매번 Repository마다 새로 정의 해 주어야하기때문에 번거롭다.
+- @NoBeanRepository 를 사용하여 Repository interface만 상속하는 형태로 정의한다면 
+- 매번 정의해주지 않아도 된다.
+```
+//@RepositoryDefinition(domainClass = Comment.class,idClass = Long.class)
+public interface CustomRepository extends MyRepository<Comment,Long>{
+
+//    Comment save(Comment comment);
+
+//    List<Comment> findAll();
+}
+```
+```
+@NoRepositoryBean
+public interface MyRepository<T,Id extends Serializable> extends Repository<T, Id> {
+
+    // T의 하위타입도 가능하도록 정의
+    <E extends T>E save(E entity);
+
+    List<T> findAll();
+
+}
+```
+
+
+

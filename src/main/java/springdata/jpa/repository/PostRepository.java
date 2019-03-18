@@ -20,8 +20,14 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     List<Post> findAll();
 
     // 제목이 포함되는 것을 검색
+    // use-declered 전략
+    // native쿼리를 사용하고싶다면 native쿼리를 사용한다.
+    @Query(value = "SELECT c FROM Comment c",nativeQuery = true)
     Page<Post> findByTitleContains(String title, Pageable pageable);
 
     // counting 쿼리도 만들수있다.
     long countByTitleContains(String title);
+
+
+
 }

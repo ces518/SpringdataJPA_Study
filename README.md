@@ -326,3 +326,31 @@ public interface MyRepository<T,Id extends Serializable> extends Repository<T, I
 - JSR 305 애노테이션 을 메타 애노테이션을 지원함.
 
 
+### Query 만들기
+- 스프링 데이터 저장소에 쿼리를 만들기 
+- 메서드명 분석해서 생성 (CREATE)
+```
+Page<Post> findByTitleContains(String title, Pageable pageable);
+```
+- 미리 정의해둔 쿼리를 찾아 사용 (USE_DECLARED_QUERY)
+```
+// use-declered 전략
+// native쿼리를 사용하고싶다면 native쿼리를 사용한다.
+@Query(value = "SELECT c FROM Comment c",nativeQuery = true)
+```
+- 미리 정의한 쿼리를 찾아보고 없으면 만들기 (CREATE_IF_NOT_FOUND) [기본전략]
+```
+// Query생성 전략을 설정해줄수있다CREATE_IF_NOT_FOUND가 기본전략
+@EnableJpaRepositories(queryLookupStrategy = QueryLookupStrategy.Key.CREATE_IF_NOT_FOUND)
+```
+
+> 쿼리를 찾는방법
+- @Query , @NamedQuery ... 
+- 를 사용하는데 JpaRepository의 경우에는 @Query, 프로시저 , 네임드쿼리 순으로 우선순위를 가진다.
+
+- 리턴타입
+- Collection , Composit , Page , Optional , Domain 객체 등이 올수있다.
+
+> 쿼리 생성 전략 ? 
+- 가장먼저 메서드명으로 쿼리를 생성해본다.
+- 다음 차선책으로 @Query 사용 

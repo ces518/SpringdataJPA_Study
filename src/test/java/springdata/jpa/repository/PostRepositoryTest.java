@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import springdata.jpa.domain.Post;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,4 +73,54 @@ public class PostRepositoryTest {
         long hello = postRepository.countByTitleContains("hello");
         assertThat(hello).isEqualTo(1);
     }
+
+    @Test
+    public void crud() {
+        //given
+        createPost("Spring");
+        createPost("Hello World");
+        createPost("Hibernate");
+        createPost("Spring-data-jpa");
+
+        //when
+        List<Post> posts = postRepository.findByTitleContainsIgnoreCaseOrderByTitle("Spring");
+
+        //then
+        assertThat(posts.size()).isEqualTo(2);
+        // 해당 필드명과 , 벨류값을 지정하여 테스트
+        assertThat(posts).first().hasFieldOrPropertyWithValue("title","Spring");
+    }
+
+    @Test
+    public void page() {
+        //given
+        createPost("Spring");
+        createPost("Hello World");
+        createPost("Hibernate");
+        createPost("Spring-data-jpa");
+
+        //when
+        //static factory method 사용
+        PageRequest pageRequest = PageRequest.of(0,10, Sort.by(Sort.Direction.DESC,"title"));
+
+        Page<Post> posts = postRepository.findByTitleContains("Spring", pageRequest);
+
+        /*
+        * Stream을 사용할 경우 try with resource문을 활용하여
+        * 사용후 반드시 닫아주어야한다.
+        * */
+        try(Stream<Post> postStream = postRepository.findByTitleContains("Spring")){
+            Post firstPost = postStream.findFirst().get();
+            assertThat(firstPost.getTitle()).isEqualTo("Spring");
+        }
+        //then
+        assertThat(posts.getNumberOfElements()).isEqualTo(2);
+    }
+
+    private void createPost(String title) {
+        Post post = new Post();
+        post.setTitle(title);
+        postRepository.save(post);
+    }
+
 }

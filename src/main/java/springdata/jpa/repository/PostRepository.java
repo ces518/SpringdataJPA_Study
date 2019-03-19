@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import springdata.jpa.domain.Post;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,12 +23,14 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     // 제목이 포함되는 것을 검색
     // use-declered 전략
     // native쿼리를 사용하고싶다면 native쿼리를 사용한다.
-    @Query(value = "SELECT c FROM Comment c",nativeQuery = true)
+    //@Query(value = "SELECT c FROM Comment c",nativeQuery = true)
     Page<Post> findByTitleContains(String title, Pageable pageable);
 
     // counting 쿼리도 만들수있다.
     long countByTitleContains(String title);
 
 
+    List<Post> findByTitleContainsIgnoreCaseOrderByTitle(String hello_world);
 
+    Stream<Post> findByTitleContains(String title);
 }

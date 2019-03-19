@@ -354,3 +354,15 @@ Page<Post> findByTitleContains(String title, Pageable pageable);
 > 쿼리 생성 전략 ? 
 - 가장먼저 메서드명으로 쿼리를 생성해본다.
 - 다음 차선책으로 @Query 사용 
+
+> Stream<T>
+```
+        /*
+        * Stream을 사용할 경우 try with resource문을 활용하여
+        * 사용후 반드시 닫아주어야한다.
+        * */
+        try(Stream<Post> postStream = postRepository.findByTitleContains("Spring")){
+            Post firstPost = postStream.findFirst().get();
+            assertThat(firstPost.getTitle()).isEqualTo("Spring");
+        }
+```

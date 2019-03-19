@@ -4,9 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.concurrent.ListenableFuture;
 import springdata.jpa.domain.Post;
 
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 /**
@@ -33,4 +36,11 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     List<Post> findByTitleContainsIgnoreCaseOrderByTitle(String hello_world);
 
     Stream<Post> findByTitleContains(String title);
+
+    //background 에서 실행되는 스레드풀에 해당 호출메서드의 실행을 위임한다.
+    // 해당 코드를 non-blocking 하게 사용하려면 Future를 사용해야한다.
+    @Async
+    ListenableFuture<List<Post>> findByTitle(String title);
+    //Future<List<Post>> findByTitle(String title);
+
 }

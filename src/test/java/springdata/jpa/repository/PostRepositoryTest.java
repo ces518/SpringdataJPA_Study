@@ -8,11 +8,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 import springdata.jpa.domain.Post;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,7 +97,7 @@ public class PostRepositoryTest {
     }
 
     @Test
-    public void page() {
+    public void page() throws ExecutionException, InterruptedException {
         //given
         createPost("Spring");
         createPost("Hello World");
@@ -113,6 +118,31 @@ public class PostRepositoryTest {
             Post firstPost = postStream.findFirst().get();
             assertThat(firstPost.getTitle()).isEqualTo("Spring");
         }
+
+
+        // Future 는 1.5에 추가된 기능이다.
+        ListenableFuture<List<Post>> spring = postRepository.findByTitle("Spring");
+
+        // 호출이 끝났는지 확인
+        spring.isDone();
+        spring.addCallback(new ListenableFutureCallback<List<Post>>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                System.out.println("error");
+            }
+
+            @Override
+            public void onSuccess(@Nullable List<Post> posts) {
+                System.out.println("success");
+            }
+        });
+        // parameter가 존재하지않으면 , 결과를 받아올때까지 무작정 기다리고;
+        List<Post> postList = spring.get();
+        postList.forEach(System.out::println);
+        // spring.get(....); 파라미터가 존재하면 정해진 시간만큼만 대기한다.
+
+
+
         //then
         assertThat(posts.getNumberOfElements()).isEqualTo(2);
     }

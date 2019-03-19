@@ -366,3 +366,24 @@ Page<Post> findByTitleContains(String title, Pageable pageable);
             assertThat(firstPost.getTitle()).isEqualTo("Spring");
         }
 ```
+
+> 비동기 쿼리 (권장하는 기능은 아님 ..)
+- repository layer에서 @Async는 제대로 동작하지않음..
+- ListenerableFuture를 사용하면 callback을 등록하여 가능하긴하다.
+```
+    //background 에서 실행되는 스레드풀에 해당 호출메서드의 실행을 위임한다.
+    // 해당 코드를 non-blocking 하게 사용하려면 Future를 사용해야한다.
+    @Async
+    Future<List<Post>> findByTitle(String title);
+    
+    // Future 는 1.5에 추가된 기능이다.
+    Future<List<Post>> spring = postRepository.findByTitle("Spring");
+
+    // 호출이 끝났는지 확인
+    spring.isDone();
+    // parameter가 존재하지않으면 , 결과를 받아올때까지 무작정 기다리고;
+    List<Post> postList = spring.get();
+    postList.forEach(System.out::println);
+    // spring.get(....); 파라미터가 존재하면 정해진 시간만큼만 대기한다.
+```
+### 비동기 처리는 Spring5 WebFlux + mongodb 조합을 사용할것..

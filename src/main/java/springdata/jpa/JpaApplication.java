@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.QueryLookupStrategy;
 // Query생성 전략을 설정해줄수있다CREATE_IF_NOT_FOUND가 기본전략
 @EnableJpaRepositories(queryLookupStrategy = QueryLookupStrategy.Key.CREATE_IF_NOT_FOUND
     //repositoryImplementationPostfix = "TEST"
+        ,repositoryBaseClass = JuneRepositoryImpl.class
 )
 public class JpaApplication {
 

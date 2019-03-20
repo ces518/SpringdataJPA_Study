@@ -418,3 +418,31 @@ Page<Post> findByTitleContains(String title, Pageable pageable);
 @EnableJpaRepositories({
 repositoryImplementationPostfix = "TEST"})
 ```
+
+### 기본 리포지토리 커스터마이징 (모든 엔티티 리포지토리에 적용)
+- JpaRepository를 상속받는 리포지토리를 정의
+- 기본 구현체를 상속받는 리포지토리 구현체 정의
+- @EnableJpaRepositories(repositoryBaseClass) 에 추가
+- Custom한 Repository를 상속받아 사용하면된다.
+```
+@NoRepositoryBean
+public interface JuneRepository<T,ID extends Serializable> extends JpaRepository<T,ID> {
+
+    boolean contains(T entity);
+}
+
+public class JuneRepositoryImpl<T,ID extends Serializable> extends SimpleJpaRepository<T,ID> implements JuneRepository<T,ID> {
+
+    private EntityManager entityManager;
+
+    public JuneRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
+        super(entityInformation, entityManager);
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public boolean contains(T entity) {
+        return entityManager.contains(entity);
+    }
+}
+```

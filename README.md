@@ -387,3 +387,34 @@ Page<Post> findByTitleContains(String title, Pageable pageable);
     // spring.get(....); 파라미터가 존재하면 정해진 시간만큼만 대기한다.
 ```
 ### 비동기 처리는 Spring5 WebFlux + mongodb 조합을 사용할것..
+
+
+
+### Custom Repository 생성하기
+- 쿼리메서드로 해결이 되지않는경우 , 직접 코딩으로 구현이 가능하다.
+- 스프링데이터 리포지토리 인터페이스 기능추가
+- 기본기능 덮어쓰기 가능
+
+- 구현방법
+    - 커스텀 리포지토리 인터페이스 정의
+    - 인터페이스 구현 클래스만들기 (..Impl)
+    - 엔티티 리포지토리에 커스텀 리포지토리 인터페이스 추가
+
+- 개발자가 구현한 Custom한 구현체를 우선순위를 높게주기 때문에
+- 기존에 JPA가 제공해주는 기능과 동일한 네임의 메서드가 존재할경우
+- Custom한 구현체가 우선순위를 가지므로 해당 구현체의 메서드가 실행된다.
+    
+> JPA 에서의 delete
+- 삭제하려는 대상 엔티티가 persistent context의 관리대상이아니라면(detached) 
+- merge를 호출하여 다시 persist 상태로 만든뒤 , remove를 실행한다
+
+> 그이유는 ? 
+- 만약에 해당 엔티티가 삭제되면 그 엔티티와 관계를 맺고있는 다른 엔티티에도 영향이 가능경우 (Casecade)
+
+> 접미어 설정하기
+- custom 한 repository의 구현체는 Impl이 기본 접미어이다.
+- 접미어를 설정하는 방법
+```
+@EnableJpaRepositories({
+repositoryImplementationPostfix = "TEST"})
+```

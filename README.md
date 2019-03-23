@@ -513,3 +513,146 @@ Post post2 = new Post();
 post2.setTitle("events auto");
 this.postRepository.save(post2.publish());
 ```
+ 
+ ### Query DSL
+> Query DSL 사용이유 ?
+- type safe 하다 . java code로 조건문을 표현할 수 있다.
+- Predicate 인터페이스로 조건문을 관리하는데 조합도 가능하며 , 따로 관리도 할 수 있다.
+- QueryDslPredicateExecutor 를 jpa가 제공한다.
+    - findOne
+    - findAll 
+    - 위 두메서드를 지원한다.
+    
+> 연동 방법 ?  
+- 기본 리포지토리를 사용하는경우.
+- 의존성 과 플러그인을 추가한다.
+```
+<!--
+    querydsl은 spring boot가 의존성을 관리하기때문에
+    추가적인 설정이 필요없다.
+    apt 모듈은 코드를 생성해주는 모듈이다.
+-->
+<dependency>
+    <groupId>com.querydsl</groupId>
+    <artifactId>querydsl-apt</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>com.querydsl</groupId>
+    <artifactId>querydsl-jpa</artifactId>
+</dependency>
+
+<!--querydsl maven plugin 사용용-->
+<plugin>
+    <groupId>com.mysema.maven</groupId>
+    <artifactId>apt-maven-plugin</artifactId>
+    <version>1.1.3</version>
+    <executions>
+        <execution>
+            <goals>
+                <!--process lifecycle에 적용-->
+                <goal>process</goal>
+            </goals>
+            <configuration>
+                <!-- java 패키지 및에 생성-->
+                <outputDirectory>target/generated-sources/java</outputDirectory>
+                <!-- 해당 처리 클래스 설정-->
+                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                <!--모든 설정 후 maven 에 compile cycle을 실행-->
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+```
+            <!--querydsl maven plugin 사용용-->
+            <plugin>
+                <groupId>com.mysema.maven</groupId>
+                <artifactId>apt-maven-plugin</artifactId>
+                <version>1.1.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!--process lifecycle에 적용-->
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <!-- java 패키지 및에 생성-->
+                            <outputDirectory>target/generated-sources/java</outputDirectory>
+                            <!-- 해당 처리 클래스 설정-->
+                            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                            <!--모든 설정 후 maven 에 compile cycle을 실행-->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+```
+
+- querydsl을 사용할 리포지토리에 QuerydslPredicateExecutor 상속받는다.
+
+```
+/**
+ * QuerydslPredicateExecutor 를 추가적으로 상속받는다.
+ */
+public interface AccountRepository extends JpaRepository<Account,Long>, QuerydslPredicateExecutor<Account> {
+}
+```
+
+- 커스텀한 리포지토리를 사용 할 경우
+- SimpeJpaRepository가 아닌 QuerydslJpaRepository를 상속받는다.
+
+- 그 이유는 ? 
+- QuerydslJpaRepository 는 SimpleJpaRepository를 상속받아 구현을하는데
+- CustomRepository를 구현하여 사용할경우엔 해당 메서드가 구현이 되어있지않음. 
+```
+//queryDsl 을 사용하려면 , SimpleJpaRepository가 아닌
+//QuerydslJpaRepository 를 상속받아야한다.
+//public class JuneRepositoryImpl<T,ID extends Serializable> extends SimpleJpaRepository<T,ID> implements JuneRepository<T,ID> {
+public class JuneRepositoryImpl<T,ID extends Serializable> extends QuerydslJpaRepository<T,ID> implements JuneRepository<T,ID> {
+    private EntityManager entityManager;
+
+    public JuneRepositoryImpl(JpaEntityInformation<T, ID> entityInformation, EntityManager entityManager) {
+        super(entityInformation, entityManager);
+        this.entityManager = entityManager
+    }
+
+//    public JuneRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
+//        super(entityInformation, entityManager);
+//        this.entityManager = entityManager;
+//    }
+
+    @Override
+    public boolean contains(T entity) {
+        return entityManager.contains(entity);
+    }
+}
+``` 
+
+- 사용방법
+1. 의존성과 플러그인을 모두 추가해준다.
+2. maven lifecycle > compile을 실행한다.
+3. outputDirectory에 생성이 되었는지 확인한다.
+4. Predicate를 활용하여 쿼리를 생성한다.
+
+```
+@RunWith(SpringRunner.class)
+@DataJpaTest
+public class AccountRepositoryTest {
+
+    @Autowired
+    AccountRepository accountRepository;
+
+    @Test
+    public void test() {
+
+        QAccount account = QAccount.account;
+        // predicate 를 활용 조건문 생성
+        Predicate predicate = account.username.likeIgnoreCase("june")
+                            .and(account.username.startsWithIgnoreCase("june"));
+
+        Optional<Account> result = accountRepository.findOne(predicate);
+
+        assertThat(result).isEmpty();
+    }
+}
+```

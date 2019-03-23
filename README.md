@@ -429,7 +429,7 @@ repositoryImplementationPostfix = "TEST"})
 public interface JuneRepository<T,ID extends Serializable> extends JpaRepository<T,ID> {
 
     boolean contains(T entity);
-}
+}.l,
 
 public class JuneRepositoryImpl<T,ID extends Serializable> extends SimpleJpaRepository<T,ID> implements JuneRepository<T,ID> {
 
@@ -445,4 +445,71 @@ public class JuneRepositoryImpl<T,ID extends Serializable> extends SimpleJpaRepo
         return entityManager.contains(entity);
     }
 }
+```
+
+### 도메인 이벤트
+- 이벤트 기반의 프로그래밍이 가능하게 할수있다.
+- ApplicationContext는 단순한 BeanFactory가아니라 , 이벤트 퍼블리셔이다.
+- ApplicationContext를 활용하여 Event를 Publish 할수있다.
+
+```
+Post post = new Post();
+post.setTitle("new Events");
+
+this.applicationContext.publishEvent(new PostPublishedEvent(post));
+```
+
+- 해당 도메인에 대한 이벤트를 발생시키기 전에 
+- ApplicationEvent를 상속받는 구현체 정의가필요하다.
+
+```
+/**
+ * Custom한 Domain Event 정의
+ */
+@Getter
+public class PostPublishedEvent extends ApplicationEvent {
+
+    // Post의 정보를 참조하도록 정의
+    private final Post post;
+
+    public PostPublishedEvent(Object source) {
+        super(source);
+        this.post = (Post) source;
+    }
+}
+```
+
+- 구현체를 정의한 다음 , 해당 이벤트 발생시 처리할 리스너를 정의해주어야한다.
+
+```
+/**
+ * 이벤트가 발생했을때 처리를 할 리스너를 등록.
+ * ApplicationListener를 구현함.
+ * 빈으로 등록되어 있어야한다.
+ *
+ */
+public class PostEventListener implements ApplicationListener<PostPublishedEvent> {
+    @Override
+    public void onApplicationEvent(PostPublishedEvent postPublishedEvent) {
+        System.out.println(postPublishedEvent.getPost().getTitle());
+    }
+}
+```
+
+- 위의 방법 외에도 Spring data jpa는 event Publish 기능을 제공한다.
+- 먼저 domain class에 bstractAggregateRoot 를 상속받아 이벤트 publishing 메서드를 구현해주어야한다.
+
+```
+// spring data jpa 가 제공해주는 publishing 기능을 사용하기위한 구현
+public Post publish() {
+    registerEvent(new PostPublishedEvent(this));
+    return this;
+}
+```
+- 해당 부분이 구현 되어있다면 repository를 통해 save될때 자동적으로 이벤트가 publish 된다.
+
+```
+Post post2 = new Post();
+post2.setTitle("events auto");
+this.postRepository.save(post2.publish());
 ```

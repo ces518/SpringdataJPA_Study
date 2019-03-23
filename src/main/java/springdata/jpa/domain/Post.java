@@ -2,6 +2,8 @@ package springdata.jpa.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.AbstractAggregateRoot;
+import springdata.jpa.events.PostPublishedEvent;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -19,7 +21,7 @@ import java.util.Set;
 @NamedQueries({
         @NamedQuery(name = "getAllPosts", query = "SELECT p FROM Post p")
 })
-public class Post {
+public class Post extends AbstractAggregateRoot<Post> {
 
     @Id @GeneratedValue
     private Long seq;
@@ -47,5 +49,11 @@ public class Post {
                 ", title='" + title + '\'' +
                 ", comments=" + comments +
                 '}';
+    }
+
+    // spring data jpa 가 제공해주는 publishing 기능을 사용하기위한 구현
+    public Post publish() {
+        registerEvent(new PostPublishedEvent(this));
+        return this;
     }
 }

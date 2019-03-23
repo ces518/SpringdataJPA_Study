@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -14,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import springdata.jpa.domain.Post;
+import springdata.jpa.events.PostPublishedEvent;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,10 +30,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 // repository layer 의 slice test 용 annotation
 // 기본적으로 transaction이 rollback
 @DataJpaTest
+
+//test용 config클래스 설정
+@Import(PostRepositoryTestConfig.class)
 public class PostRepositoryTest {
 
     @Autowired
     PostRepository postRepository;
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     //rollback false 설정
     @Test
@@ -151,6 +160,24 @@ public class PostRepositoryTest {
         Post post = new Post();
         post.setTitle(title);
         postRepository.save(post);
+    }
+
+    @Test
+    public void events() {
+        Post post = new Post();
+        post.setTitle("new Events");
+
+        this.applicationContext.publishEvent(new PostPublishedEvent(post));
+
+        // 이벤트 리스너를 등록해주어야함.
+        // spring data jpa는 save될때 이벤트를 publishing 해주는 기능을 제공한다.
+        // AbstractAggregationRoot 라는 클래스에 이미 구현이 되어있다.
+        // 해당 도메인 클래스에 상속을받아 구현을 해주면 된다.
+        // 그럼 위의 코드는 필요없이 save할때마다 자동적으로 이벤트가 발생함.
+
+        Post post2 = new Post();
+        post2.setTitle("events auto");
+        this.postRepository.save(post2.publish());
     }
 
 }

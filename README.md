@@ -228,7 +228,7 @@
 
 > TypeSafe한 쿼리
 - Criteria
-```
+```JAVA
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Post> query2 = criteriaBuilder.createQuery(Post.class);
         Root<Post> from = query2.from(Post.class);

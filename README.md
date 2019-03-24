@@ -656,3 +656,25 @@ public class AccountRepositoryTest {
     }
 }
 ```
+
+### Spring data common 이 제공하는 web지원 기능
+- 제공기능 
+    - 도메인클래스 컨버터
+    - 요청 매개변수를 Pageable , Sort로 변환하여 받을 수 있다.
+    - Page 관련 HATEOAS 기능 제공
+        - PagedResource
+        - PagedResourceAssembler
+        - 페이지에 대한 정보도 같이 내 보내준다.
+    - payload 프로덕션
+        - 요청으로 들어온 정보의 일부만 캡쳐하여
+        - 바인딩 할 수 있다.
+        - @ProjectedPayload 애노테이션이 붙은 인터페이스를 정의하고
+        - @JsonPath , @XBRead 를 통해 설정해줄 수 있다.
+        - 해당 인터페이스 타입으로 @RequestBody를 통해 받아오면 된다.
+    - 요청 쿼리 매개변수를 QueryDsl 의 Predicate로 받아올 수 있다.
+        - firstName=test&lastName=who
+        - QAccount.account.firstName.eq("test").and(QAccount.account.lastName.eq("who"));
+        - 의 형태로 받아 올 수 있다.
+            
+        
+    

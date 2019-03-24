@@ -677,4 +677,14 @@ public class AccountRepositoryTest {
         - 의 형태로 받아 올 수 있다.
             
         
-    
+### Domain Class Converter
+- EntityConverter 와 IdConverter가 등록되어있으며
+- WebDataBinder가 이를 참조하여 활용함.
+
+### Formatter와 Converter의 차이 ?
+- Formatter는 문자열 기반이다.
+- 문자열을 다른타입으로 변환
+- 웹에 좀더 특화되어있다.
+
+- Converter 는 모든타입을 제공한다.
+- 특정타입을 다른 타입으로 변환

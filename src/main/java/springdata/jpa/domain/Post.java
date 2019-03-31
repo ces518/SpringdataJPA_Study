@@ -28,6 +28,8 @@ public class Post extends AbstractAggregateRoot<Post> {
 
     private String title;
 
+    private String created;
+
     /*
       Cascade
     * 부모의 Persistent상태를 자식에게도 전파하는 옵션.

@@ -698,4 +698,32 @@ public class AccountRepositoryTest {
     - size : 기본값 20
     - sort: property,ASC||DESC
     - ex) sort=title,desc
-       
+```
+@GetMapping("/posts")
+public Page<Post> getPosts(Pageable pageable) {
+    return postRepository.findAll(pageable);
+}
+```
+     
+### HATEOAS
+- HATEOAS 를 사용하려면 먼저 의존성을 추가해주어야한다.
+- spring boot에서 관리하는 의존성은 version을 명시해 주지않아도된다.
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
+```
+- Page를 PagedResource로 변경하기.
+    - 핸들러 매개변수로 PagedResourceAssenbler 선언
+    - return type을 PagedResource<Resource<Posts>> 로 선언.
+    - PagedResourceAssembler가 Page<Post> 를 리소스로 변경해주는 역할을 한다.
+    
+- Page와 관련된 하이퍼미디어 정보를 포함하여 전달해준다.
+```
+@GetMapping("/posts")
+public PagedResources<Resource<Post>> getPosts(Pageable pageable, PagedResourcesAssembler<Post> assembler) {
+    return assembler.toResource(postRepository.findAll(pageable) );
+}
+```    
+

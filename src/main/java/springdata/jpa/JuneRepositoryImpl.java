@@ -21,7 +21,7 @@ public class JuneRepositoryImpl<T,ID extends Serializable> extends QuerydslJpaRe
 
     public JuneRepositoryImpl(JpaEntityInformation<T, ID> entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
-        this.entityManager = entityManager
+        this.entityManager = entityManager;
     }
 
 //    public JuneRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {

@@ -688,3 +688,14 @@ public class AccountRepositoryTest {
 
 - Converter 는 모든타입을 제공한다.
 - 특정타입을 다른 타입으로 변환
+
+### Pagable 과 Sort 매개변수
+- 스프링 MVC HandlerMethodArgumentResolver
+    - 스프링 MVC의 핸들러 메서드의 매개변수로 받을 수있는 객체들을 확장하고 싶을때 사용하는 인터페이스
+
+- 페이징과 정렬관련 기본 매개변수
+    - page: 0부터 시작.
+    - size : 기본값 20
+    - sort: property,ASC||DESC
+    - ex) sort=title,desc
+       

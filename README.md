@@ -727,3 +727,19 @@ public PagedResources<Resource<Post>> getPosts(Pageable pageable, PagedResources
 }
 ```    
 
+### Spring data jpa Repository
+- @EnableJpaRepositories (entityManager , transactionManager 등을 설정가능)
+    - Spring boot 를 사용할때는 자동설정된다.
+    - 부트를 사용하지않을 경우엔 @Configuration 클래스에 사용
+
+- @SpringBootApplication이 메타애노테이션으로 되어있기때문에
+- Best Practice는 베이스 패키지에 Application class를 두는것이 좋다.
+
+- @Repository를 붙어야할까 ?
+    - JpaRepository의 구현체인 SimpleJpaRepopsitory가 이미 @Repository를 가지고있다.
+    - 그말은 즉슨 중복.
+    - 하지만 붙인다고해서 큰일이 나는건아니다.
+     
+- 스프링 @Repository
+    - SQLException , JpaException을 DataAccessException으로 변환을 해준다.
+     

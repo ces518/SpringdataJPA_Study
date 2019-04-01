@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 /**
@@ -18,7 +19,7 @@ import javax.persistence.Id;
 @Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Customer {
 
-    @Id
+    @Id @GeneratedValue
     private Long id;
 
     private String username;

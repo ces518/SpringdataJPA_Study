@@ -743,3 +743,67 @@ public PagedResources<Resource<Post>> getPosts(Pageable pageable, PagedResources
 - 스프링 @Repository
     - SQLException , JpaException을 DataAccessException으로 변환을 해준다.
      
+### Spring data jpa Entity save
+- JpaRepository의 save는 단순히 entity를 추가하는것이 아니다.
+
+- persist
+    - Transient상태의 객체를 persistent상태로 만들어준다.
+    - Transient상태란 ?
+        - 새로이 생성된 객체
+        - Database, PersistentContext모두 모르는상태의 객체.
+        
+    - Persistent상태란 ?
+        - PersistentContext가 관리를 하는상태.
+        - 캐싱을 하는상태.
+        - 1차캐시 , DirtyChecking , WriteBehind..
+- merge
+    - detached상태의 객체를 persitent상태로 만들어준다.
+    - merge는 상황에 따라 insert , update 쿼리가 발생한다.
+    - Detached상태란 ?
+        - 1번이라도 Persistent 상태가 된 객체
+        - 데이터베이스에 기록이 되어있는객체
+        
+- 기본전략
+    - 어떤 Entity에 id값이 존재하지않는다 ?
+    - persist 호출 
+    - 해당 인스턴스 자체가 영속이됨.
+    - 항상 영속화 되어있는 객체를 리턴해준다.
+    
+    - 어떤 Entity에 id값이 존재한다 ?
+    - merge 호출   
+
+- BestPractice는 리턴받은 인스턴스를 사용할것.
+```
+@Test
+public void save() {
+    // transient 상태
+    Customer customer = Customer.builder()
+//                                    .id(1L)
+                                .username("ces518")
+                                .password("pjy3859").build(); // persist 호출
+
+
+    Customer savedCustomer = customers.save(customer);// insert Query 발생
+
+    // persist를 호출하면 persist() 메서드의 인자로받은 객체를 PersistentContext에 영속화한다.
+    // 즉 인자로받은 객체와 리턴한 객체는 같다.
+    assertThat(entityManager.contains(customer)).isTrue();
+    assertThat(entityManager.contains(savedCustomer)).isTrue();
+    assertThat(customer == savedCustomer);
+
+    Customer customer1 = Customer.builder()
+                                .id(customer.getId())
+                                .username("ces5182")
+                                .password("pjy3852").build(); // merge 호출
+
+    Customer savedCustomer2 = customers.save(customer1);// update Query 발생
+
+    // merge를 호출하면 merge() 메서드의 인자로 받은 객체의 복사본을 만들고,
+    // 해당복사본을 PersistentContext에 영속화 한뒤
+    // 해당 복사본을 리턴해준다.
+    // 인자로받은 객체와 리턴한 객체는 다르다.
+    assertThat(entityManager.contains(savedCustomer2)).isTrue();
+    assertThat(entityManager.contains(customer1)).isFalse();
+    assertThat(customer1 != savedCustomer2);
+}
+```

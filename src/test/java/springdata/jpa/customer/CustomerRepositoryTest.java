@@ -66,4 +66,29 @@ public class CustomerRepositoryTest {
         assertThat(entityManager.contains(customer1)).isFalse();
         assertThat(customer1 != savedCustomer2);
     }
+
+    @Test
+    public void findByUsernameStartsWith() {
+        //given
+        createCustomer();
+
+        //when
+        List<Customer> results = customers.findByUsernameStartsWith("ces518");
+
+        //then
+        assertThat(results.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void findByPassword() {
+        //given
+        createCustomer();
+
+        //when
+        List<Customer> results = customers.findByPassword("pjy3859");
+
+        //then
+        assertThat(results.size()).isEqualTo(1);
+    }
+
 }

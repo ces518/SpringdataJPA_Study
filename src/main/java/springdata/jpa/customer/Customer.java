@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,6 +14,7 @@ import javax.persistence.Id;
  * Time: 21:32
  **/
 @Entity
+//@NamedQuery(name="Customer.findByPassword", query = "SELECT c FROM Customer c WHERE c.password like ?1")
 @Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Customer {
 

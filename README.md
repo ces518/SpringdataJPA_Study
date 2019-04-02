@@ -807,3 +807,43 @@ public void save() {
     assertThat(customer1 != savedCustomer2);
 }
 ```
+
+
+### Spring data jpa Query Method 만들기
+- 두가지 방법이 존재한다.
+    - method명을 보고 쿼리를 생성하는방법
+    - @Query 애노테이션을 활용하여 직접 쿼리를 생성하는방법
+
+- Spring data jpa는 NamedQuery방식도 지원한다.
+```java
+@Entity
+@NamedQuery(name="Customer.findByPassword", query = "SELECT c FROM Customer c WHERE c.password like ?1")
+@Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Customer {
+
+    @Id @GeneratedValue
+    private Long id;
+
+    private String username;
+
+    private String password;
+
+    @Builder
+    public Customer(Long id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+}
+
+public interface CustomerRepository extends JpaRepository<Customer,Long> {
+
+    List<Customer> findByUsernameStartsWith(String username);
+
+    //Customer.findByPassword
+    //method명을 키로사용하여 NamedQuery를 찾는다.
+    //NamedQuery를 사용하면 Domain Class가 지저분해짐.
+    @Query("SELECT c FROM Customer c WHERE c.password like :password")
+    List<Customer> findByPassword(String password);
+}
+```

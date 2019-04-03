@@ -847,3 +847,14 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     List<Customer> findByPassword(String password);
 }
 ```
+
+### Spring data jpa QueryMethod Sort
+- Pageable , Sort 를 매개변수로 사용 할 수있다.
+- @Query 애노테이션과 함께 사용할때 제약사항이 존재한다.
+- OrderBy 절에서 함수를 호출하는 경우에는 사용할 수 없다.
+- JpaSort.unsafe(); 메서드를 이용하면 사용할 수 있다.
+- ex) JpaSort.unsafe("LENGTH(title)");
+```java
+@Query("SELECT c FROM Customer c WHERE c.password like :password")
+List<Customer> findByPassword(String password, Sort sort);
+```

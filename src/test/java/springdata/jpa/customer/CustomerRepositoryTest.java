@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
@@ -85,8 +87,8 @@ public class CustomerRepositoryTest {
         createCustomer();
 
         //when
-        List<Customer> results = customers.findByPassword("pjy3859");
-
+        //List<Customer> results = customers.findByPassword("pjy3859", Sort.by(Sort.Direction.DESC,"password"));
+        List<Customer> results = customers.findByPassword("pjy3859", JpaSort.unsafe("LENGTH(password)"));
         //then
         assertThat(results.size()).isEqualTo(1);
     }

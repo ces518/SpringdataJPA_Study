@@ -3,6 +3,7 @@ package springdata.jpa.customer;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -21,4 +22,12 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     //NamedQuery를 사용하면 Domain Class가 지저분해짐.
     @Query("SELECT c FROM Customer c WHERE c.password like :password")
     List<Customer> findByPassword(String password, Sort sort);
+
+    //NamedParameter를 사용하면 해당 파라미터의 이름과 매핑을 해주며,
+    //변수명이 꼭 파라미터명과 같지않아도 동작한다.
+    //SpEL 지원 SpringExpressionLanguage를 지원한다.
+    //EntityNamed변수를 기본적으로 제공하며 해당 엔티티클래스에서 엔티티명이 변경되어도
+    //@Query 애노테이션을 사용한 곳에서 수정해주지않아도 된다는 장점이 있다.
+    @Query("SELECT c FROM #{#entityName} c WHERE c.password like :password")
+    List<Customer> findByPassword2(@Param("password") String password);
 }

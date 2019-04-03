@@ -858,3 +858,18 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
 @Query("SELECT c FROM Customer c WHERE c.password like :password")
 List<Customer> findByPassword(String password, Sort sort);
 ```
+
+### Spring data jpa NamedParameter 와 SpEL
+- @Query를 사용한 메서드에 @Param(name) 을 사용하면 
+- ?1 , ?2 와 같이 채번으로 매핑하는것이아니라 , name으로 참조할 수 있다.
+- SpEL지원.
+```java
+//NamedParameter를 사용하면 해당 파라미터의 이름과 매핑을 해주며,
+//변수명이 꼭 파라미터명과 같지않아도 동작한다.
+//SpEL 지원 SpringExpressionLanguage를 지원한다.
+//EntityNamed변수를 기본적으로 제공하며 해당 엔티티클래스에서 엔티티명이 변경되어도
+//@Query 애노테이션을 사용한 곳에서 수정해주지않아도 된다는 장점이 있다.
+@Query("SELECT c FROM #{#entityName} c WHERE c.password like :password")
+List<Customer> findByPassword2(@Param("password") String password);
+```
+

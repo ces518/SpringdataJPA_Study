@@ -887,3 +887,44 @@ List<Customer> findByPassword2(@Param("password") String password);
 @Query("UPDATE Customer c SET c.password = ?1 WHERE c.id = ?2")
 int updateCustomer(String password, Long id);
 ```
+
+### Spring data jpa EntityGraph
+- fetch모드를 좀더 유연하게 설정 할수있는 기능을 제공한다.
+```java
+/**
+ * NamedEntityGraph 에 그룹명을 지정해주고,
+ * attributeNodes에 연관관계를 설정해놓은 이름을 지정해준다.
+ *
+ * 기본값 : FETCH : 설정해놓은 연관관계는 EAGER로 가져오고 ,나머지는 LAZY로 가져온다.
+ *          LOAD  : 설정한 연관관계는 EAGER로 가져오고 , 나머지는 기본전략을 따른다.
+ *
+ * attributeNodes에 설정해 두지않았더라도 기본형 데이터들은 EAGER로 가져온다.
+ */
+@NamedEntityGraph(name = "Order.customer",
+            attributeNodes = @NamedAttributeNode("customer"))
+@Entity
+@Getter @Setter
+public class Order {
+
+    @Id @GeneratedValue
+    private Long id;
+
+    private String name;
+
+    /**
+     * x2one = fetch default EAGER
+     * x2many = fetch default LAZY
+     */
+    @ManyToOne
+    private Customer customer;
+}
+
+public interface OrderRepository extends JpaRepository<Order,Long> {
+
+    // attributePaths에 설정하는것이 깔끔한방법.
+    // 해당부분이 중복되는경우 Entity상단에 정의해놓고 재사용하는것을 추천한다.
+    //@EntityGraph(value = "Order.customer")
+    @EntityGraph(attributePaths = "customer")
+    Optional<Order> getById(Long id);
+}
+```

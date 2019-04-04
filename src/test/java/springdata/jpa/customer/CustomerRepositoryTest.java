@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -93,4 +92,16 @@ public class CustomerRepositoryTest {
         assertThat(results.size()).isEqualTo(1);
     }
 
+    @Test
+    public void updatePassword () {
+        //given
+        createCustomer();
+
+        //when
+        int result = customers.updateCustomer("pjy38590", 1L);
+        Customer customer = customers.findById(1L).get();
+
+        //then
+        assertThat(customer.getPassword()).isNotEqualTo("pjy38590");
+    }
 }

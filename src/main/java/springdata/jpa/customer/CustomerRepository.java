@@ -2,6 +2,7 @@ package springdata.jpa.customer;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -30,4 +31,11 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     //@Query 애노테이션을 사용한 곳에서 수정해주지않아도 된다는 장점이 있다.
     @Query("SELECT c FROM #{#entityName} c WHERE c.password like :password")
     List<Customer> findByPassword2(@Param("password") String password);
+
+    //UPDATE Query를 직접 정의하여 사용할경우 데이터 싱크가 맞지않을 수 있다.
+    //Update후 바로 select하여 사용할 경우 PersistenceContext에 캐싱된 객체를 사용하기때문.
+    //Spring에서도 이 문제를 알고 , persistenceContext를 clear해주는 옵션을 제공한다.
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Customer c SET c.password = ?1 WHERE c.id = ?2")
+    int updateCustomer(String password, Long id);
 }

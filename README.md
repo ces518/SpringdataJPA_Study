@@ -873,3 +873,17 @@ List<Customer> findByPassword(String password, Sort sort);
 List<Customer> findByPassword2(@Param("password") String password);
 ```
 
+### Spring data jpa Update Method
+- Update 또는 Delete 쿼리 직접 정의하기
+- @Query , @Modifying ...
+- 추천하는 방법은 아니다.
+- Update Query는 PersistenceContext가 관리하는 대상이면 상태를 감지하여 Update쿼리가 발생됨...
+- Hibernate PersistenceContext상태에 있기때문에 Update후 바로 select하여 사용하면 데이터가 싱크가 맞지않을 수 있다.
+```java
+//UPDATE Query를 직접 정의하여 사용할경우 데이터 싱크가 맞지않을 수 있다.
+//Update후 바로 select하여 사용할 경우 PersistenceContext에 캐싱된 객체를 사용하기때문.
+//Spring에서도 이 문제를 알고 , persistenceContext를 clear해주는 옵션을 제공한다.
+@Modifying(clearAutomatically = true)
+@Query("UPDATE Customer c SET c.password = ?1 WHERE c.id = ?2")
+int updateCustomer(String password, Long id);
+```

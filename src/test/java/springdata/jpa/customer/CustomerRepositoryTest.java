@@ -104,4 +104,17 @@ public class CustomerRepositoryTest {
         //then
         assertThat(customer.getPassword()).isNotEqualTo("pjy38590");
     }
+
+    @Test
+    public void projection() {
+        //given
+        createCustomer();
+
+        //when
+        List<CustomerSummary> list = customers.findByUsername("ces518");
+
+        //then
+        assertThat(list.size()).isEqualTo(1);
+        System.out.println(list.get(0).getVotes());
+    }
 }

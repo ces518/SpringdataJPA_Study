@@ -928,3 +928,56 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     Optional<Order> getById(Long id);
 }
 ```
+### Spring data jpa Projection
+- projection 이란 ?
+    - 어떤 Entity의 일부분만 select할 수 있는 기능.
+
+- 인터페이스 기반과 , 클래스기반 
+- Closed Projection
+    - interface 또는 class에 정의해둔 애트리뷰트에 대해서만 Query를 수행한다.
+    - 성능 최적화에 유용하다.
+- Open Projection
+    - Closed Projection 과 마찬가지로 interface 또는 class에 정의해준 애트리뷰트에 대해 Query를 수행하는데
+    - 해당 엔티티의 애트리뷰트를 둘이상 조합하여 새로운 데이터 를 만들경우 해당 엔티티의 모든 애트리뷰트르 조회한 후 실행하게된다.
+    - 성능 최적화보다는 특정 데이터를 가공하여 사용할때 용이하다.
+```java
+/**
+ * Interface 기반의 Projection사용을 위한 Interface
+ * Entity의 특정 애트리뷰트에 대한 Getter만 선언해준다.
+ */
+public interface CustomerSummary {
+
+    int getUp();
+
+    int getDown();
+    
+    /*
+        JDK 8 이상 부터는 interface에 default 메서드를 사용 할 수 있다.
+        Closed Projection을 사용하면서 두개이상의 컬럼을 조합하여 데이터를 가공는방식.
+     */
+    default String getVotes() {
+        return getUp() + " " + getDown();
+    }
+    
+    /*
+      Open Projection 방식
+      target = Customer 이며 target의 모든것을 가져와서 처리하기때문에
+      Closed Projection과는 상반된 느낌이다.
+     */
+    @Value("${target.up + ' ' + target.down}")
+    String getVotes();
+}
+
+/*
+  closed 방식
+  Interface 기반 Projection 사용
+ */
+//List<Customer> findByUsername(String username);
+List<CustomerSummary> findByUsername(String username);
+
+/*
+    Generic을 활용하여 다양한 Projection 사용시 쿼리메서드 하나로 사용 할 수 있다.
+ */
+<T> List<T> findByUsername(String username, Class<T> type);
+```
+

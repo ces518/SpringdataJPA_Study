@@ -25,6 +25,10 @@ public class Customer {
 
     private String password;
 
+    private int up;
+
+    private int down;
+
     @Builder
     public Customer(Long id, String username, String password) {
         this.id = id;

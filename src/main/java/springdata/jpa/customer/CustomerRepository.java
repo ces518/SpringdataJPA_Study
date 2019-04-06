@@ -38,4 +38,17 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Customer c SET c.password = ?1 WHERE c.id = ?2")
     int updateCustomer(String password, Long id);
+
+
+    /*
+      closed 방식
+      Interface 기반 Projection 사용
+     */
+    //List<Customer> findByUsername(String username);
+    List<CustomerSummary> findByUsername(String username);
+
+    /*
+        Generic을 활용하여 다양한 Projection 사용시 쿼리메서드 하나로 사용 할 수 있다.
+     */
+    <T> List<T> findByUsername(String username, Class<T> type);
 }

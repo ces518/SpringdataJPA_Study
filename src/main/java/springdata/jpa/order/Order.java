@@ -31,7 +31,13 @@ public class Order {
     @Id @GeneratedValue
     private Long id;
 
-    private String name;
+    private String orderName;
+
+    private int up;
+
+    private int down;
+
+    private boolean best;
 
     /**
      * x2one = fetch default EAGER

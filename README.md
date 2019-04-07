@@ -980,4 +980,78 @@ List<CustomerSummary> findByUsername(String username);
  */
 <T> List<T> findByUsername(String username, Class<T> type);
 ```
+### Spring data jpa Specification
+- DDD의 Specification 을 채용한것으로 QueryDSL 의 predicate와 비슷하다.
 
+- 사용방법
+```xml
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-jpamodelgen</artifactId>
+</dependency>
+```
+- 의존성 추가가 완료되었다면 Intellij IDEA의 환경설정으로 가서
+- AnnotationProcessor를 추가해주어야한다.
+- setting > annontationProcessor > Enable Annotation Processing 체크
+- org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor 추가
+ 
+- 설정이 끝난후 maven clean 후 , 다시 프로젝트를 빌드해준다.
+- 설정이 제대로 되었다면 target/generated-sources 디렉터리에 entity 관련 class들이 생긴것을 볼 수 있다.
+
+- 다음으로 Repository에 JpaSpecificationExecutor<T>를 상속받는다.
+```java
+public interface CustomerRepository extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
+    
+}
+```
+
+- 이제 Specification (스펙) 을 정의해주어야한다.
+```java
+public class CustomerSpecs {
+
+    /*
+      Spec 정의
+      Customer의 up이 10보다 큰경우
+    * */
+    public static Specification<Customer> isGood() {
+        return new Specification<Customer>() {
+            @Nullable
+            @Override
+            public Predicate toPredicate(Root<Customer> root,
+                                         CriteriaQuery<?> criteriaQuery,
+                                         CriteriaBuilder builder) {
+                return builder.greaterThan(root.get(Customer_.up),10);
+            }
+        };
+    }
+    /*
+      Spec 정의
+      Customer의 down 이 10보다 큰경우
+    * */
+    public static Specification<Customer> isBad() {
+        return new Specification<Customer>() {
+            @Nullable
+            @Override
+            public Predicate toPredicate(Root<Customer> root,
+                                         CriteriaQuery<?> criteriaQuery,
+                                         CriteriaBuilder builder) {
+                return builder.greaterThan(root.get(Customer_.down),10);
+            }
+        };
+    }
+}
+```
+
+- 정의한 spec을 활용하여 query를 수행 할 수있다.
+```java
+@Test
+public void specification() {
+    // client code가 간단해진다.
+
+    // 정의해준 spec을 파라메터로 사용하여 where 조건절을 query로 실행한다.
+    // repository 에 메서드를 많이 추가하지않아도 여러가지  다양한 쿼리를 사용할수있다.
+    // querydsl + specification 조합이 좋다.
+    customers.findAll(CustomerSpecs.isGood());
+    customers.findAll(CustomerSpecs.isGood().and(CustomerSpecs.isBad()));
+}
+```

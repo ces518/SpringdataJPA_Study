@@ -117,4 +117,15 @@ public class CustomerRepositoryTest {
         assertThat(list.size()).isEqualTo(1);
         System.out.println(list.get(0).getVotes());
     }
+
+    @Test
+    public void specification() {
+        // client code가 간단해진다.
+
+        // 정의해준 spec을 파라메터로 사용하여 where 조건절을 query로 실행한다.
+        // repository 에 메서드를 많이 추가하지않아도 여러가지  다양한 쿼리를 사용할수있다.
+        // querydsl + specification 조합이 좋다.
+        customers.findAll(CustomerSpecs.isGood());
+        customers.findAll(CustomerSpecs.isGood().and(CustomerSpecs.isBad()));
+    }
 }

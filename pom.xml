@@ -58,16 +58,15 @@
             추가적인 설정이 필요없다.
             apt 모듈은 코드를 생성해주는 모듈이다.
         -->
-        <dependency>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-apt</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.querydsl</groupId>-->
+<!--            <artifactId>querydsl-apt</artifactId>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-jpa</artifactId>
-        </dependency>
-
+<!--        <dependency>-->
+<!--            <groupId>com.querydsl</groupId>-->
+<!--            <artifactId>querydsl-jpa</artifactId>-->
+<!--        </dependency>-->
 
         <!--
             HATEOAS를 사용을 위한 의존성
@@ -76,6 +75,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
+        <!--
+            Spring data jpa specification 사용
+            type-safe 쿼리르 위한  codegenerator 의존성 추가
+        -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -85,25 +93,55 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <!--querydsl maven plugin 사용용-->
+<!--            <plugin>-->
+<!--                <groupId>com.mysema.maven</groupId>-->
+<!--                <artifactId>apt-maven-plugin</artifactId>-->
+<!--                <version>1.1.3</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            &lt;!&ndash;process lifecycle에 적용&ndash;&gt;-->
+<!--                            <goal>process</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            &lt;!&ndash; java 패키지 및에 생성&ndash;&gt;-->
+<!--                            <outputDirectory>target/generated-sources/java</outputDirectory>-->
+<!--                            &lt;!&ndash; 해당 처리 클래스 설정&ndash;&gt;-->
+<!--                            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>-->
+<!--                            &lt;!&ndash;모든 설정 후 maven 에 compile cycle을 실행&ndash;&gt;-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
+            <!--  Spring data jpa Specification plugin  -->
             <plugin>
-                <groupId>com.mysema.maven</groupId>
-                <artifactId>apt-maven-plugin</artifactId>
-                <version>1.1.3</version>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.0.5</version>
                 <executions>
                     <execution>
+                        <id>processor</id>
                         <goals>
-                            <!--process lifecycle에 적용-->
                             <goal>process</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                         <configuration>
-                            <!-- java 패키지 및에 생성-->
-                            <outputDirectory>target/generated-sources/java</outputDirectory>
-                            <!-- 해당 처리 클래스 설정-->
-                            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-                            <!--모든 설정 후 maven 에 compile cycle을 실행-->
+                            <processors>
+                                <processor>
+                                    org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor
+                                </processor>
+                            </processors>
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>${hibernate.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

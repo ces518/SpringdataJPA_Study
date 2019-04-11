@@ -1,9 +1,6 @@
 package springdata.jpa.customer;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,7 +10,7 @@ import javax.persistence.*;
  * Date: 2019-04-01
  * Time: 21:32
  **/
-@Entity
+@Entity @Setter
 //@NamedQuery(name="Customer.findByPassword", query = "SELECT c FROM Customer c WHERE c.password like ?1")
 @Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Customer {

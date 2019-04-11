@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * Date: 2019-04-01
  * Time: 21:33
  **/
-public interface CustomerRepository extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer> {
+public interface CustomerRepository extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer>, QueryByExampleExecutor<Customer> {
 
     List<Customer> findByUsernameStartsWith(String username);
 

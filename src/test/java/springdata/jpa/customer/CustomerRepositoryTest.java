@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -127,5 +129,27 @@ public class CustomerRepositoryTest {
         // querydsl + specification 조합이 좋다.
         customers.findAll(CustomerSpecs.isGood());
         customers.findAll(CustomerSpecs.isGood().and(CustomerSpecs.isBad()));
+    }
+
+    @Test
+    public void queryByExample() {
+        // 아래 객체 자체가 prove 이다.
+        // ExampleMatcher를통해 어떻게 매칭을 시킬것인지 정의한다.
+        // 기본적으로 prove에 존재하는 모든 필드와 동일해야한다.
+        // up이 10인 데이터들만 조회하고싶을경우를 정의
+        Customer prove = new Customer();
+        prove.setUp(10);
+
+        // 장점
+        // 별도의 코드 생성기나 애노테이션 처리기가 필요없다.
+        // 데이터 기술에 독립적인 API
+        // 단점
+        // nested 또는 프로퍼티 그룹 제약조건을 걸지못한다.
+        // ex) 좋아요가 10개이상 , best글 등 의 조건
+        // 조건이 상당히 제약적이다.
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny();
+
+        Example<Customer> example = Example.of(prove,exampleMatcher);
+        customers.findAll(example);
     }
 }

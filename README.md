@@ -1064,3 +1064,32 @@ public void specification() {
 - Probe란 도메인 객체
 - ExampleMatcher 는 Probe에 들어있는 필드 값들을 어떻게 쿼리할 데이터와 비교할지 정의한것
 - Example을 이 둘을 합친것. 이것을 가지고 쿼리를 한다.
+- 문자열은 starts/contains/ends/regex가 가능하고 , 나머지 property들은 무조건 값이 일치해야한다.
+- QueryDSL 과 Specification 을 추천한다..
+
+```java
+    @Test
+    public void queryByExample() {
+        // 아래 객체 자체가 prove 이다.
+        // ExampleMatcher를통해 어떻게 매칭을 시킬것인지 정의한다.
+        // 기본적으로 prove에 존재하는 모든 필드와 동일해야한다.
+        // up이 10인 데이터들만 조회하고싶을경우를 정의
+        Customer prove = new Customer();
+        prove.setUp(10);
+
+        // 장점
+        // 별도의 코드 생성기나 애노테이션 처리기가 필요없다.
+        // 데이터 기술에 독립적인 API
+        // 단점
+        // nested 또는 프로퍼티 그룹 제약조건을 걸지못한다.
+        // ex) 좋아요가 10개이상 , best글 등 의 조건
+        // 조건이 상당히 제약적이다.
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny();
+
+        Example<Customer> example = Example.of(prove,exampleMatcher);
+        customers.findAll(example);
+    }
+
+// repository 에 QueryByExampleExecutor 를 추가해주어야한다.
+public interface CustomerRepository extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer>, QueryByExampleExecutor<Customer> 
+```

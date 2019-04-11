@@ -1056,6 +1056,7 @@ public void specification() {
 }
 ```
 
+
 ### Spring data jpa Query by Example
 - QBE는 필드명을 작성할 필요없이 단순한 인터페이스를 통해 동적으로 쿼리를 생성하는 기능을 제공한다. 
 

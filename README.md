@@ -1055,3 +1055,12 @@ public void specification() {
     customers.findAll(CustomerSpecs.isGood().and(CustomerSpecs.isBad()));
 }
 ```
+
+### Spring data jpa Query by Example
+- QBE는 필드명을 작성할 필요없이 단순한 인터페이스를 통해 동적으로 쿼리를 생성하는 기능을 제공한다. 
+
+#### Example 이란 ?
+- Probe + ExampleMatcher
+- Probe란 도메인 객체
+- ExampleMatcher 는 Probe에 들어있는 필드 값들을 어떻게 쿼리할 데이터와 비교할지 정의한것
+- Example을 이 둘을 합친것. 이것을 가지고 쿼리를 한다.

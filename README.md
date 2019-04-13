@@ -1094,3 +1094,19 @@ public void specification() {
 // repository 에 QueryByExampleExecutor 를 추가해주어야한다.
 public interface CustomerRepository extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer>, QueryByExampleExecutor<Customer> 
 ```
+
+### Spring data jpa Transaction
+- Spring data jpa 가 제공하는 메서드는 기본적으로 @Transactional이 적용되어있다.
+- 스프링 @Transacitonal
+    - 클래스,인터페이스,메서드 에 적용할수있으며 , 메서드에 가까울수록 우선순위가 높다.
+    - RumtimeException , Error 가 발생하면 롤백을한다.
+    - 데이터를 변경하는 동작이 없다면 readOnly=true로 주는것이좋다.
+    - isolation : 동시성 제어를 위해 사용한다.
+        - read-uncommit : 커밋되지 않는 데이터까지 읽을 여지가생김(phantomRead문제)
+             (성능은 가장 좋다.)
+    - propagation : 트랜잭션 전파 (기존 트랜잭션을 이어갈것인지 , 개개트랜잭션으로 갈것인지..)
+             
+- JPA 구현체로 Hibernate를 사용시 Transaction을 ReadOnly로 설정하면 좋은점
+    - Flush모드를 NEVER로 설정하여 , Dirty Checking을 하지않도록 한다.
+    
+

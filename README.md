@@ -1094,3 +1094,91 @@ public void specification() {
 // repository 에 QueryByExampleExecutor 를 추가해주어야한다.
 public interface CustomerRepository extends JpaRepository<Customer,Long>, JpaSpecificationExecutor<Customer>, QueryByExampleExecutor<Customer> 
 ```
+
+### Spring data jpa Transaction
+- Spring data jpa 가 제공하는 메서드는 기본적으로 @Transactional이 적용되어있다.
+- 스프링 @Transacitonal
+    - 클래스,인터페이스,메서드 에 적용할수있으며 , 메서드에 가까울수록 우선순위가 높다.
+    - RumtimeException , Error 가 발생하면 롤백을한다.
+    - 데이터를 변경하는 동작이 없다면 readOnly=true로 주는것이좋다.
+    - isolation : 동시성 제어를 위해 사용한다.
+        - read-uncommit : 커밋되지 않는 데이터까지 읽을 여지가생김(phantomRead문제)
+             (성능은 가장 좋다.)
+    - propagation : 트랜잭션 전파 (기존 트랜잭션을 이어갈것인지 , 개개트랜잭션으로 갈것인지..)
+             
+- JPA 구현체로 Hibernate를 사용시 Transaction을 ReadOnly로 설정하면 좋은점
+    - Flush모드를 NEVER로 설정하여 , Dirty Checking을 하지않도록 한다.
+    
+
+### Spring data jpa Auditing
+- Auditiing 이란 ? 
+- 엔티티에 변화가 발생하면 언제 , 누구에의해 변화가 일어났는지 기록하는 기능이다.
+
+- @CreatedDate : 최초 Persist 되는 시점
+- @CreatedBy : 최초 Persist 되는 시점에 누구에 의해 Persist되었는가
+- @LastModifiedDate : 최종 update 되는 시점
+- @LastModifiedBy : 최종 update 되는 시점에 누구에의해 Update되었는가
+
+- xxxDate는 캐시가 가능하지만 , xxxBy는 정보를 제공해주기전까지 Spring data jpa는 알지못한다.
+- 따라서 해당 정보를 제공해주는 설정을 해주어야한다.
+- AuditorAware<T> 인터페이스를 구현한다.
+- SpringBoot에서 기본설정을 제공하지 않기때문에 @EnableJpaAuditing 을 설정해주어야한다.
+
+``java
+@Entity
+@Getter @Setter
+@EntityListeners(AuditingEntityListener.class)
+public class Post extends AbstractAggregateRoot<Post> {
+
+    @Id @GeneratedValue
+    private Long seq;
+
+    private String title;
+
+    @CreatedDate
+    private Date createdAt;
+
+    @CreatedBy
+    @ManyToOne
+    private Account createdBy;
+
+    @LastModifiedDate
+    private Date updatedAt;
+
+    @LastModifiedBy
+    @ManyToOne
+    private Account updatedBy;
+
+}
+
+@Service
+public class AccountAuditorAware implements AuditorAware<Account> {
+
+    @Override
+    public Optional<Account> getCurrentAuditor() {
+//          Spring Security를 사용할경우 구현 
+//        Authentication authentication = SecurityContextHolder.getAuthentication();
+//        if(authentication == null || !authentication.isAuthenticated()) {
+//            return null;
+//        }
+//        return Optional.of(authentication);
+    }
+}
+
+// Bean의 이름을 참조한다..
+@EnableJpaAuditing(auditorAwareRef = "accountAuditorAware")
+public class JpaApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(JpaApplication.class, args);
+    }
+
+}
+```
+
+- JPA의 라이프사이클 이벤트를 이용하는 방법도 존재한다.
+    - JPA 라이프 사이클이란 ? 
+        - 어떠한 엔티티에 변화가 일어났을경우 콜백이벤트를 제공한다.
+- @PrePersist
+  @PreUpdate ..
+  

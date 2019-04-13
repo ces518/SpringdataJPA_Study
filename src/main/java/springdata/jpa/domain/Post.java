@@ -2,10 +2,16 @@ package springdata.jpa.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import springdata.jpa.events.PostPublishedEvent;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +27,7 @@ import java.util.Set;
 @NamedQueries({
         @NamedQuery(name = "getAllPosts", query = "SELECT p FROM Post p")
 })
+@EntityListeners(AuditingEntityListener.class)
 public class Post extends AbstractAggregateRoot<Post> {
 
     @Id @GeneratedValue
@@ -38,6 +45,20 @@ public class Post extends AbstractAggregateRoot<Post> {
     * */
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<Comment> comments = new HashSet<>();
+
+    @CreatedDate
+    private Date createdAt;
+
+    @CreatedBy
+    @ManyToOne
+    private Account createdBy;
+
+    @LastModifiedDate
+    private Date updatedAt;
+
+    @LastModifiedBy
+    @ManyToOne
+    private Account updatedBy;
 
     public void addComment(Comment comment) {
         this.getComments().add(comment);
